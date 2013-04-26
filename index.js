@@ -13,16 +13,36 @@ function Triples(opts){
 	return this;
 }
 
-Triples.prototype.direct = function(stream, name, headers, callback){
+Triples.prototype.getBucket = function(headers, callback){
+	if (typeof headers === 'function'){
+		callback = headers;
+		headers = {};
+	}
 
+	this._request('GET', '/', headers, function(err, parsed){
+		var list = [];
+		var rKeys = Object.keys(parsed);
+		for (var i = 0; i < parsed.Key.length; i++) {
+			var item = {};
+			for (var d = 0; d < rKeys.length; d++) {
+				item[rKeys[d]] = (typeof parsed[rKeys[d]] === 'string') ? parsed[rKeys[d]] : parsed[rKeys[d]][i];
+			}
+			list.push(item);
+		}
+		callback(err, list);
+	}).end();
+};
+
+Triples.prototype.get = function(name, headers, callback){
+	this._request('GET', name, headers, callback).end();
 };
 
 Triples.prototype.put = function(stream, name, headers, callback){
 	stream.pipe(this._request('PUT', name, headers, callback));
 };
 
-Triples.prototype.get = function(name, headers, callback){
-	this._request('GET', name, headers, callback).end();
+Triples.prototype.delete = function(name, headers, callback){
+	this._request('DELETE', name, headers, callback).end();
 };
 
 Triples.prototype._request = function(method, path, headers, fn){
@@ -51,7 +71,7 @@ Triples.prototype._request = function(method, path, headers, fn){
 			method: method.toUpperCase(),
 			host: this.bucket + '.' + this._regionHost(),
 			path: path,
-			agent: false,
+			agent: false, // connection pooling issue
 			headers: headers
 		};
 
@@ -59,8 +79,8 @@ Triples.prototype._request = function(method, path, headers, fn){
 
 		var s3Request = interface.request(params, function(res){
 			if (res.headers['content-type'] === 'application/xml'){
-				self._parse(res, function(err, data){
-					fn(err, data);
+				self._looseParse(res, function(err, object){
+					fn(err, object);
 				});
 			}
 			else{
@@ -70,6 +90,34 @@ Triples.prototype._request = function(method, path, headers, fn){
 
 		s3Request.on('error', fn);
 		return s3Request;
+};
+
+Triples.prototype._looseParse = function(stream, fn){
+	var parse = new sax.createStream(true, {normalize: true, trim: true});
+	var depth = [];
+	var nodes = {};
+	parse.on('opentag', function(tag){
+		depth.push(tag.name);
+	});
+	parse.on('endtag', function(name){
+		var i = depth.indexOf(name);
+		if (i !== -1){
+			depth.splice(i,1);
+		}
+	});
+	parse.on('text', function(text){
+		if (typeof nodes[this._parser.tag.name] === 'string'){
+			nodes[this._parser.tag.name] = [nodes[this._parser.tag.name], text];
+		}
+		else{
+			nodes[this._parser.tag.name] = text;
+		}
+	});
+	parse.on('error', fn);
+	parse.on('end', function(){
+		fn(null, nodes);
+	});
+	stream.pipe(parse);
 };
 
 Triples.prototype._regionHost = function(){
@@ -84,21 +132,6 @@ Triples.prototype._header = function(obj, name){
 		}
 	}
 	return null;
-};
-
-Triples.prototype._parse = function(stream, callback){
-	var xml = sax.createStream(true, {lowercase: true, position: false});
-	var map = {};
-	xml.on('text', function(txt){
-		map[this._parser.tag.name] = txt;
-	});
-	xml.on('error', function(err){
-		callback(err);
-	});
-	xml.on('end', function(){
-		callback(null, map);
-	});
-	stream.pipe(xml);
 };
 
 Triples.prototype._getAwsHeaders = function(headers){
@@ -134,6 +167,14 @@ Triples.prototype._makeAuthorizationHeader = function(method, md5, contentType, 
 	var stringToSign = [method, md5, contentType, date.toUTCString(), '/' + bucket + resource].join('\n') +
 						((amzHeaders === undefined) ? '\n' + this._canonicalizeAmazonHeaders(amzHeaders).join('\n') : '');
 	return crypto.createHmac('sha1', this.secret).update(stringToSign).digest('base64');
+};
+
+Triples.prototype.generatePolicyFromObject = function(object){
+	return new Buffer(JSON.stringify(object)).toString('base64');
+};
+
+Triples.prototype.generateSignatureFromPolicyString = function(policy){
+	return crypto.createHmac('sha1', this.secret).update(policy).digest('base64');
 };
 
 module.exports = function(opts){

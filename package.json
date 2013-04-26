@@ -1,15 +1,20 @@
 {
   "name": "triples",
-  "version": "0.0.0",
-  "description": "A module for Amazon S3 that make file processing a breeze",
+  "version": "0.0.2",
+  "description": "A module for Amazon S3 that makes file processing a breeze",
   "main": "index.js",
   "scripts": {
-    "test": "mocha ./test"
+    "test": "cd test; mocha"
   },
   "dependencies": {
     "sax": "*"
   },
   "repository": "",
   "author": "Eli Ellis",
-  "license": "BSD"
+  "license": "BSD",
+  "gitHead": "b803e6cfa8de40d0cb1ac03333f6cf236aa63217",
+  "directories": {
+    "test": "test"
+  },
+  "devDependencies": {}
 }
