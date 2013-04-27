@@ -4,7 +4,7 @@ var crypto = require('crypto');
 var fs = require('fs');
 var sax = require('sax');
 
-function Triples(opts){
+function EseTres(opts){
 	this.bucket = opts.bucket;
 	this.key = opts.key;
 	this.secret = opts.secret;
@@ -13,7 +13,7 @@ function Triples(opts){
 	return this;
 }
 
-Triples.prototype.getBucket = function(headers, callback){
+EseTres.prototype.getBucket = function(headers, callback){
 	if (typeof headers === 'function'){
 		callback = headers;
 		headers = {};
@@ -33,23 +33,23 @@ Triples.prototype.getBucket = function(headers, callback){
 	}).end();
 };
 
-Triples.prototype.head = function(name, headers, callback){
+EseTres.prototype.head = function(name, headers, callback){
 	this._request('HEAD', name, headers, callback).end();
 };
 
-Triples.prototype.get = function(name, headers, callback){
+EseTres.prototype.get = function(name, headers, callback){
 	this._request('GET', name, headers, callback).end();
 };
 
-Triples.prototype.put = function(stream, name, headers, callback){
+EseTres.prototype.put = function(stream, name, headers, callback){
 	stream.pipe(this._request('PUT', name, headers, callback));
 };
 
-Triples.prototype.delete = function(name, headers, callback){
+EseTres.prototype.delete = function(name, headers, callback){
 	this._request('DELETE', name, headers, callback).end();
 };
 
-Triples.prototype._request = function(method, path, headers, fn){
+EseTres.prototype._request = function(method, path, headers, fn){
 		var self = this;
 
 		// assume last argument is the callback
@@ -95,7 +95,7 @@ Triples.prototype._request = function(method, path, headers, fn){
 		return s3Request;
 };
 
-Triples.prototype._looseParse = function(stream, fn){
+EseTres.prototype._looseParse = function(stream, fn){
 	var parse = new sax.createStream(true, {normalize: true, trim: true});
 	var depth = [];
 	var nodes = {};
@@ -123,11 +123,11 @@ Triples.prototype._looseParse = function(stream, fn){
 	stream.pipe(parse);
 };
 
-Triples.prototype._regionHost = function(){
+EseTres.prototype._regionHost = function(){
 	return (this.region === 'us-standard') ? 's3.amazonaws.com' : 's3-' + this.region + '.amazonaws.com';
 };
 
-Triples.prototype._header = function(obj, name){
+EseTres.prototype._header = function(obj, name){
 	var oKs = Object.keys(obj);
 	for (var i = 0; i < oKs.length; i++) {
 		if (oKs[i].toLowerCase() === name){
@@ -137,7 +137,7 @@ Triples.prototype._header = function(obj, name){
 	return null;
 };
 
-Triples.prototype._getAwsHeaders = function(headers){
+EseTres.prototype._getAwsHeaders = function(headers){
 	var hNames = Object.keys(headers);
 	hNames = hNames.filter(function(item){
 		if (item.substr(0,5).search('amz-x') === -1){
@@ -154,7 +154,7 @@ Triples.prototype._getAwsHeaders = function(headers){
 	return withVals;
 };
 
-Triples.prototype._canonicalizeAmazonHeaders = function(headers){
+EseTres.prototype._canonicalizeAmazonHeaders = function(headers){
 	var amzK = Object.keys(headers);
 	var has = [];
 	for (var i = 0; i < amzK.length; i++) {
@@ -166,20 +166,20 @@ Triples.prototype._canonicalizeAmazonHeaders = function(headers){
 	return has.sort();
 };
 
-Triples.prototype._makeAuthorizationHeader = function(method, md5, contentType, date, bucket, resource, amzHeaders){
+EseTres.prototype._makeAuthorizationHeader = function(method, md5, contentType, date, bucket, resource, amzHeaders){
 	var stringToSign = [method, md5, contentType, date.toUTCString(), '/' + bucket + resource].join('\n') +
 						((amzHeaders === undefined) ? '\n' + this._canonicalizeAmazonHeaders(amzHeaders).join('\n') : '');
 	return crypto.createHmac('sha1', this.secret).update(stringToSign).digest('base64');
 };
 
-Triples.prototype.generatePolicyFromObject = function(object){
+EseTres.prototype.generatePolicyFromObject = function(object){
 	return new Buffer(JSON.stringify(object)).toString('base64');
 };
 
-Triples.prototype.generateSignatureFromPolicyString = function(policy){
+EseTres.prototype.generateSignatureFromPolicyString = function(policy){
 	return crypto.createHmac('sha1', this.secret).update(policy).digest('base64');
 };
 
 module.exports = function(opts){
-	return new Triples(opts);
+	return new EseTres(opts);
 };
