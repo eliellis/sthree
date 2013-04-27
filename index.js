@@ -33,6 +33,10 @@ Triples.prototype.getBucket = function(headers, callback){
 	}).end();
 };
 
+Triples.prototype.head = function(name, headers, callback){
+	this._request('HEAD', name, headers, callback).end();
+};
+
 Triples.prototype.get = function(name, headers, callback){
 	this._request('GET', name, headers, callback).end();
 };
