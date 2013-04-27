@@ -58,8 +58,7 @@ Triples.prototype._request = function(method, path, headers, fn){
 			headers = {};
 		}
 
-		var now = new Date();
-		headers.Date = now.toUTCString();
+		headers.Date = (new Date()).toUTCString();
 		headers.Authorization = 'AWS ' + this.key + ':' +
 		this._makeAuthorizationHeader(
 			method.toUpperCase(),
