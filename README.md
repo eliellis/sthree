@@ -14,7 +14,7 @@ var s3 = require('esetres')({
 	secret: "SUPERSECRETKEY"
 });
 
-s3.put('/my_secret_identity.png', function(error, response){
+s3.put(fs.createReadStream('./my_secret_identity.png'), '/my_secret_identity.png', function(error, response){
 	if (error) return console.log(error, response);
 	console.log("Hope no one sees this!");
 });
@@ -26,7 +26,7 @@ s3.get('/my_secret_identity.png', function(error, response){
 	console.log("Well, it wouldn't stay a secret forever.");
 });
 
-s3.put('/me_saving_gotham.mp4', function(error, response){
+s3.put(fs.createReadStream('./me_saving_gotham.mp4'), '/me_saving_gotham.mp4', function(error, response){
 	if (error) return console.log(error, response);
 	console.log("Crahing the Batmobile was totally worth it.");
 });
@@ -47,7 +47,7 @@ s3.head('/me_saving_gotham.mp4', function(error, response){
 ```
 <hr>
 #### Methods
-##### #put(path, [headers, callback])
+##### #put(stream||buffer, path, [headers, callback])
 ###### Sends a PUT request to the specified path
 ##### #get(path, [headers, callback])
 ###### Sends a GET request to the specified Object
