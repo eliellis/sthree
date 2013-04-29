@@ -41,9 +41,12 @@ EseTres.prototype.get = function(name, headers, callback){
 	this._request('GET', name, headers, callback).end();
 };
 
-EseTres.prototype.put = function(stream, name, headers, callback){
-	delete headers['Transfer-Encoding'];
-	stream.pipe(this._request('PUT', name, headers, callback));
+EseTres.prototype.put = function(data, name, headers, callback){
+	data.pipe(this._request('PUT', name, headers, callback));
+};
+
+EseTres.prototype.putBuffer = function(data, name, headers, callback){
+	this._request('PUT', name, headers, callback).end(data);
 };
 
 EseTres.prototype.delete = function(name, headers, callback){
