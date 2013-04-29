@@ -42,11 +42,12 @@ EseTres.prototype.get = function(name, headers, callback){
 };
 
 EseTres.prototype.put = function(data, name, headers, callback){
-	data.pipe(this._request('PUT', name, headers, callback));
-};
-
-EseTres.prototype.putBuffer = function(data, name, headers, callback){
-	this._request('PUT', name, headers, callback).end(data);
+	if (Buffer.isBuffer(data)){
+		this._request('PUT', name, headers, callback).end(data);
+	}
+	else{
+		data.pipe(this._request('PUT', name, headers, callback));
+	}
 };
 
 EseTres.prototype.delete = function(name, headers, callback){
@@ -145,7 +146,7 @@ EseTres.prototype._header = function(obj, name){
 EseTres.prototype._getAwsHeaders = function(headers){
 	var hNames = Object.keys(headers);
 	hNames = hNames.filter(function(item){
-		if (item.substr(0,5).search('amz-x') === -1){
+		if (item.substr(0,5).search('x-amz') === -1){
 			return false;
 		}
 		else{
