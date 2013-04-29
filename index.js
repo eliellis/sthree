@@ -42,6 +42,7 @@ EseTres.prototype.get = function(name, headers, callback){
 };
 
 EseTres.prototype.put = function(stream, name, headers, callback){
+	delete headers['Transfer-Encoding'];
 	stream.pipe(this._request('PUT', name, headers, callback));
 };
 
