@@ -1,8 +1,8 @@
-var triples = require('../index.js');
+var esetres = require('../index.js');
 var config = require('./config');
 var fs = require('fs');
 
-var s3 = triples({
+var s3 = esetres({
 	key: config.accessKey,
 	secret: config.secretAccessKey,
 	bucket: config.bucket
@@ -10,14 +10,26 @@ var s3 = triples({
 
 var filename = "hipster.txt";
 
-describe('Triples', function(){
+describe('EseTres', function(){
 
 	describe('#put()', function(){
-		it('should put a stream into S3 with no problems', function(done){
+		it('should put a stream to S3 with no problems', function(done){
 			this.timeout(0); // we're uploading a file, so chill bro
 			fs.stat(filename, function(err, stat){
 				var file = fs.createReadStream(filename);
 				s3.put(file, '/' + filename, {'content-length': stat.size, 'content-type': 'text/plain'}, done);
+			});
+		});
+		it('should put a buffer to S3 with no problems', function(done){
+			this.timeout(0);
+			fs.readFile(filename, function(err, buff){
+				s3.put(buff, '/' + filename, {'content-length': buff.length, 'content-type': 'text/plain'}, done);
+			});
+		});
+		it('should put a stream to S3 with amz-x headers with no problems', function(done){
+			this.timeout(0);
+			fs.readFile(filename, function(err, buff){
+				s3.put(buff, '/' + filename, {'content-length': buff.length, 'content-type': 'text/plain', 'x-amz-acl': 'public-read'}, done);
 			});
 		});
 	});

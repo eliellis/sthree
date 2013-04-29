@@ -56,7 +56,6 @@ EseTres.prototype.delete = function(name, headers, callback){
 
 EseTres.prototype._request = function(method, path, headers, fn){
 		var self = this;
-
 		// assume last argument is the callback
 		if (typeof headers === 'function'){
 			fn = headers;
@@ -173,9 +172,30 @@ EseTres.prototype._canonicalizeAmazonHeaders = function(headers){
 };
 
 EseTres.prototype._makeAuthorizationHeader = function(method, md5, contentType, date, bucket, resource, amzHeaders){
-	var stringToSign = [method, md5, contentType, date.toUTCString(), '/' + bucket + resource].join('\n') +
-						((amzHeaders === undefined) ? '\n' + this._canonicalizeAmazonHeaders(amzHeaders).join('\n') : '');
-	return crypto.createHmac('sha1', this.secret).update(stringToSign).digest('base64');
+	var stringToSign =
+	[
+		method,
+		md5,
+		contentType,
+		date.toUTCString(),
+		this._isEmpty(amzHeaders) ? '' : this._canonicalizeAmazonHeaders(amzHeaders).join('\n'),
+		'/' + bucket + resource
+	];
+
+	for (var i = 0; i < stringToSign.length; i++){
+		if (stringToSign[i] === ''){
+			stringToSign.splice(i, 1);
+		}
+	}
+
+	return crypto.createHmac('sha1', this.secret).update(stringToSign.join('\n')).digest('base64');
+};
+
+EseTres.prototype._isEmpty = function(object){
+    for (var k in object)
+       if (object.hasOwnProperty(k))
+           return false;
+    return true;
 };
 
 EseTres.prototype.generatePolicyFromObject = function(object){
