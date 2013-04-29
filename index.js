@@ -59,13 +59,14 @@ EseTres.prototype._request = function(method, path, headers, fn){
 			headers = {};
 		}
 
-		headers.Date = (new Date()).toUTCString();
+		var now = new Date();
+		headers.Date = now.toUTCString();
 		headers.Authorization = 'AWS ' + this.key + ':' +
 		this._makeAuthorizationHeader(
 			method.toUpperCase(),
 			this._header(headers, 'content-md5'),
 			this._header(headers, 'content-type'),
-			new Date(),
+			now,
 			this.bucket,
 			path,
 			this._getAwsHeaders(headers)
