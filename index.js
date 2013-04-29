@@ -65,7 +65,7 @@ EseTres.prototype._request = function(method, path, headers, fn){
 			method.toUpperCase(),
 			this._header(headers, 'content-md5'),
 			this._header(headers, 'content-type'),
-			now,
+			new Date(),
 			this.bucket,
 			path,
 			this._getAwsHeaders(headers)
