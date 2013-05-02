@@ -1,6 +1,6 @@
 {
   "name": "esetres",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "A module for Amazon S3 that makes file processing a breeze",
   "main": "index.js",
   "scripts": {
