@@ -45,6 +45,10 @@ EseTres.prototype.put = function(data, name, headers, callback){
 	if (Buffer.isBuffer(data)){
 		this._request('PUT', name, headers, callback).end(data);
 	}
+	else if (Object.prototype.toString.call(data) === '[object String]'){
+		var buff = new Buffer(data); // inneficient for large strings, but the least ineficient at getting byte-length
+		this._request('PUT', name, {"Content-Type": "text/plain", "Content-Length" : buff.length}, callback).end(buff);
+	}
 	else{
 		data.pipe(this._request('PUT', name, headers, callback));
 	}
