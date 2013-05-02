@@ -47,9 +47,9 @@ s3.head('/me_saving_gotham.mp4', function(error, response){
 ```
 <hr>
 #### Methods
-##### #put(stream || buffer || string†, path, [headers, callback])
+##### #put(stream || buffer || string<sup>†</sup>, path, [headers, callback])
 ###### Sends a PUT request to the specified path
-###### †string: for convenient arbitrary string storage, uploads a mock file with the given data and a content-type of "text/plain"
+###### <sup>†</sup>string: for convenient arbitrary string storage, uploads a mock file with the given data and a content-type of "text/plain"
 ##### #get(path, [headers, callback])
 ###### Sends a GET request to the specified Object
 ##### #getBucket([headers, callback])
