@@ -47,7 +47,16 @@ EseTres.prototype.put = function(data, name, headers, callback){
 	}
 	else if (Object.prototype.toString.call(data) === '[object String]'){
 		var buff = new Buffer(data); // inneficient for large strings, but the least ineficient at getting byte-length
-		this._request('PUT', name, {"Content-Type": "text/plain", "Content-Length" : buff.length}, callback).end(buff);
+		var initializationHeaders = {"Content-Type": "text/plain", "Content-Length" : buff.length};
+		if (typeof headers === 'function'){
+			callback = headers;
+			headers = initializationHeaders;
+		}
+		else{
+			headers = this._extend(headers, initializationHeaders);
+			console.log(headers);
+		}
+		this._request('PUT', name, headers, callback).end(buff);
 	}
 	else{
 		data.pipe(this._request('PUT', name, headers, callback));
@@ -144,6 +153,36 @@ EseTres.prototype._header = function(obj, name){
 		}
 	}
 	return null;
+};
+
+EseTres.prototype._extend = function(one, two, copy){
+	if (typeof one === 'object' && typeof two === 'object'){
+		if (copy) {
+			var delegateObj = {};
+
+			var initialKeys = Object.keys(one);
+			for (var i = 0; i < initialKeys.length; i++) {
+				delegateObj[initialKeys[i]] = one[initialKeys[i]];
+			}
+
+			var extendWithKeys = Object.keys(two);
+			for (i = 0; i < extendWithKeys.length; i++) {
+				delegateObj[extendWithKeys[i]] = two[extendWithKeys[i]];
+			}
+
+			return delegateObj;
+		}
+		else{
+			var toExtendKeys = Object.keys(two);
+			for (var h = 0; h < toExtendKeys.length; h++) {
+				one[toExtendKeys[h]] = two[toExtendKeys[h]];
+			}
+			return one;
+		}
+	}
+	else{
+		throw new Error('One or both of the two function arguments were not of type "object"');
+	}
 };
 
 EseTres.prototype._getAwsHeaders = function(headers){

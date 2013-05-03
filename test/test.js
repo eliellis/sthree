@@ -20,12 +20,19 @@ describe('EseTres', function(){
 				s3.put(file, '/' + filename, {'content-length': stat.size, 'content-type': 'text/plain'}, done);
 			});
 		});
+
 		it('should put a buffer to S3 with no problems', function(done){
 			this.timeout(0);
 			fs.readFile(filename, function(err, buff){
 				s3.put(buff, '/' + filename, {'content-length': buff.length, 'content-type': 'text/plain'}, done);
 			});
 		});
+
+		it('should put a string to S3 with no problems', function(done){
+			this.timeout(0);
+			s3.put("Testing 1... 2... 3...", '/string-test.txt', done);
+		});
+
 		it('should put a stream to S3 with amz-x headers with no problems', function(done){
 			this.timeout(0);
 			fs.readFile(filename, function(err, buff){
