@@ -19,7 +19,10 @@
   "directories": {
     "test": "test"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "jshint": "^2.9.5",
+    "mocha": "^4.0.1"
+  },
   "readmeFilename": "README.md",
   "keywords": [
     "npm",

@@ -10,6 +10,7 @@ function EseTres(opts){
 	this.secret = opts.secret;
 	this.secure = opts.secure || false;
 	this.region = opts.region || 'us-standard';
+	this.baseUrl = opts.baseUrl || null;
 	return this;
 }
 
@@ -142,7 +143,18 @@ EseTres.prototype._looseParse = function(stream, fn){
 };
 
 EseTres.prototype._regionHost = function(){
-	return (this.region === 'us-standard') ? 's3.amazonaws.com' : 's3-' + this.region + '.amazonaws.com';
+	if (this.region === 'us-standard') {
+		return 's3.amazonaws.com';
+	}
+	else if (this.region !== 'us-standard'
+			&& this.baseUrl != null) {
+		// the case we are using some other S3-like provider
+		// e.g. DigitalOcean, Zenko CloudServer
+		return `${ this.region }.${ this.baseUrl }`;
+	}
+	else {
+		return `s3-'${ this.region }.amazonaws.com`;
+	}
 };
 
 EseTres.prototype._header = function(obj, name){
