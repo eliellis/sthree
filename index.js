@@ -1,5 +1,5 @@
 var http = require('http');
-var https = require('http');
+var https = require('https');
 var crypto = require('crypto');
 var fs = require('fs');
 var sax = require('sax');
@@ -8,7 +8,7 @@ function SThree(opts){
 	this.bucket = opts.bucket;
 	this.key = opts.key;
 	this.secret = opts.secret;
-	this.secure = opts.secure || false;
+	this.secure = opts.secure || true;
 	this.region = opts.region || 'us-standard';
 	this.baseUrl = opts.baseUrl || null;
 	return this;
