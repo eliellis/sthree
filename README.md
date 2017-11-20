@@ -1,14 +1,14 @@
-# node-esetres
+# sthree
 
 ## Installation
-`npm install esetres`
+`npm install sthree`
 
 ## Usage
 Usage is pretty straight forward
 
 ```javascript
 var fs = require('fs');
-var s3 = require('esetres')({
+var s3 = require('sthree')({
 	bucket: "bucketname",
 	key: "PUBLICKEY",
 	secret: "SUPERSECRETKEY"

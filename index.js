@@ -4,7 +4,7 @@ var crypto = require('crypto');
 var fs = require('fs');
 var sax = require('sax');
 
-function EseTres(opts){
+function SThree(opts){
 	this.bucket = opts.bucket;
 	this.key = opts.key;
 	this.secret = opts.secret;
@@ -14,7 +14,7 @@ function EseTres(opts){
 	return this;
 }
 
-EseTres.prototype.getBucket = function(headers, callback){
+SThree.prototype.getBucket = function(headers, callback){
 	if (typeof headers === 'function'){
 		callback = headers;
 		headers = {};
@@ -34,15 +34,15 @@ EseTres.prototype.getBucket = function(headers, callback){
 	}).end();
 };
 
-EseTres.prototype.head = function(name, headers, callback){
+SThree.prototype.head = function(name, headers, callback){
 	this._request('HEAD', name, headers, callback).end();
 };
 
-EseTres.prototype.get = function(name, headers, callback){
+SThree.prototype.get = function(name, headers, callback){
 	this._request('GET', name, headers, callback).end();
 };
 
-EseTres.prototype.put = function(data, name, headers, callback){
+SThree.prototype.put = function(data, name, headers, callback){
 	if (Buffer.isBuffer(data)){
 		this._request('PUT', name, headers, callback).end(data);
 	}
@@ -64,11 +64,11 @@ EseTres.prototype.put = function(data, name, headers, callback){
 	}
 };
 
-EseTres.prototype.delete = function(name, headers, callback){
+SThree.prototype.delete = function(name, headers, callback){
 	this._request('DELETE', name, headers, callback).end();
 };
 
-EseTres.prototype._request = function(method, path, headers, fn){
+SThree.prototype._request = function(method, path, headers, fn){
 		var self = this;
 		// assume last argument is the callback
 		if (typeof headers === 'function'){
@@ -114,7 +114,7 @@ EseTres.prototype._request = function(method, path, headers, fn){
 		return s3Request;
 };
 
-EseTres.prototype._looseParse = function(stream, fn){
+SThree.prototype._looseParse = function(stream, fn){
 	var parse = new sax.createStream(true, {normalize: true, trim: true});
 	var depth = [];
 	var nodes = {};
@@ -142,7 +142,7 @@ EseTres.prototype._looseParse = function(stream, fn){
 	stream.pipe(parse);
 };
 
-EseTres.prototype._regionHost = function(){
+SThree.prototype._regionHost = function(){
 	if (this.region === 'us-standard') {
 		return 's3.amazonaws.com';
 	}
@@ -157,7 +157,7 @@ EseTres.prototype._regionHost = function(){
 	}
 };
 
-EseTres.prototype._header = function(obj, name){
+SThree.prototype._header = function(obj, name){
 	var oKs = Object.keys(obj);
 	for (var i = 0; i < oKs.length; i++) {
 		if (oKs[i].toLowerCase() === name){
@@ -167,7 +167,7 @@ EseTres.prototype._header = function(obj, name){
 	return null;
 };
 
-EseTres.prototype._extend = function(one, two, copy){
+SThree.prototype._extend = function(one, two, copy){
 	if (typeof one === 'object' && typeof two === 'object'){
 		if (copy) {
 			var delegateObj = {};
@@ -197,7 +197,7 @@ EseTres.prototype._extend = function(one, two, copy){
 	}
 };
 
-EseTres.prototype._getAwsHeaders = function(headers){
+SThree.prototype._getAwsHeaders = function(headers){
 	var hNames = Object.keys(headers);
 	hNames = hNames.filter(function(item){
 		if (item.substr(0,5).search('x-amz') === -1){
@@ -214,7 +214,7 @@ EseTres.prototype._getAwsHeaders = function(headers){
 	return withVals;
 };
 
-EseTres.prototype._canonicalizeAmazonHeaders = function(headers){
+SThree.prototype._canonicalizeAmazonHeaders = function(headers){
 	var amzK = Object.keys(headers);
 	var has = [];
 	for (var i = 0; i < amzK.length; i++) {
@@ -226,7 +226,7 @@ EseTres.prototype._canonicalizeAmazonHeaders = function(headers){
 	return has.sort();
 };
 
-EseTres.prototype._makeAuthorizationHeader = function(method, md5, contentType, date, bucket, resource, amzHeaders){
+SThree.prototype._makeAuthorizationHeader = function(method, md5, contentType, date, bucket, resource, amzHeaders){
 	var stringToSign =
 	[
 		method,
@@ -246,21 +246,21 @@ EseTres.prototype._makeAuthorizationHeader = function(method, md5, contentType, 
 	return crypto.createHmac('sha1', this.secret).update(stringToSign.join('\n')).digest('base64');
 };
 
-EseTres.prototype._isEmpty = function(object){
+SThree.prototype._isEmpty = function(object){
     for (var k in object)
        if (object.hasOwnProperty(k))
            return false;
     return true;
 };
 
-EseTres.prototype.generatePolicyFromObject = function(object){
+SThree.prototype.generatePolicyFromObject = function(object){
 	return new Buffer(JSON.stringify(object)).toString('base64');
 };
 
-EseTres.prototype.generateSignatureFromPolicyString = function(policy){
+SThree.prototype.generateSignatureFromPolicyString = function(policy){
 	return crypto.createHmac('sha1', this.secret).update(policy).digest('base64');
 };
 
 module.exports = function(opts){
-	return new EseTres(opts);
+	return new SThree(opts);
 };
