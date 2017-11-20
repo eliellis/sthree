@@ -9,7 +9,7 @@
   "dependencies": {
     "sax": "*"
   },
-  "repository": {https://github.com/eliellis/node-sthree.git
+  "repository": {
     "type": "git",
     "url": "git://github.com/eliellis/sthree.git"
   },

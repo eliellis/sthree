@@ -46,17 +46,24 @@ s3.head('/me_saving_gotham.mp4', function(error, response){
 
 ```
 <hr>
-#### Methods
-##### #put(stream || buffer || string<sup>†</sup>, path, [headers, callback])
-###### Sends a PUT request to the specified path
-###### <sup>†</sup><sub>string: for convenient arbitrary string storage, uploads a mock file with the given data and a content-type of "text/plain"</sub>
-##### #get(path, [headers, callback])
-###### Sends a GET request to the specified Object
-##### #getBucket([headers, callback])
-###### Returns the contents of the current bucket
-##### #head(path, [headers, callback])
-###### Sends a HEAD request to the specified Object
-##### #generatePolicyFromObject(object)
-###### A helper-function for direct-to-S3 uploads that generates the Base64 encoded version of the policy passed to it
-##### #generateSignatureFromPolicyString(policy)
-###### A helper-function for direct-to-S3 uploads that works together with the afforementioned function by generating the SHA1-HMAC Base64 encoded signature requred by the S3 API for direct post requests (<a href="http://aws.amazon.com/articles/1434">refer here</a> for more information on the purpose of thes functions)
+
+# Methods
+
+## put(stream || buffer || string<sup>†</sup>, path, [headers, callback])
+### Sends a PUT request to the specified path
+<sup>†</sup><sub>string: for convenient arbitrary string storage, uploads a mock file with the given data and a content-type of "text/plain"</sub>
+
+## get(path, [headers, callback])
+### Sends a GET request to the specified Object
+
+## getBucket([headers, callback])
+### Returns the contents of the current bucket
+
+## head(path, [headers, callback])
+### Sends a HEAD request to the specified Object
+
+## generatePolicyFromObject(object)
+### A helper-function for direct-to-S3 uploads that generates the Base64 encoded version of the policy passed to it
+
+## generateSignatureFromPolicyString(policy)
+### A helper-function for direct-to-S3 uploads that works together with the afforementioned function by generating the SHA1-HMAC Base64 encoded signature requred by the S3 API for direct post requests (<a href="http://aws.amazon.com/articles/1434">refer here</a> for more information on the purpose of thes functions)
