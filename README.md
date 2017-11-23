@@ -4,12 +4,14 @@
 `npm install sthree`
 
 ## Usage
-Usage is pretty straight forward
+Usage is pretty straightforward.
 
 ```javascript
 var fs = require('fs');
 var s3 = require('sthree')({
 	bucket: "bucketname",
+	// baseUrl: 'digitaloceanspaces.com',
+	// region: 'nyc3',
 	key: "PUBLICKEY",
 	secret: "SUPERSECRETKEY"
 });
@@ -66,4 +68,4 @@ s3.head('/me_saving_gotham.mp4', function(error, response){
 ### A helper-function for direct-to-S3 uploads that generates the Base64 encoded version of the policy passed to it
 
 ## generateSignatureFromPolicyString(policy)
-### A helper-function for direct-to-S3 uploads that works together with the afforementioned function by generating the SHA1-HMAC Base64 encoded signature requred by the S3 API for direct post requests (<a href="http://aws.amazon.com/articles/1434">refer here</a> for more information on the purpose of thes functions)
+### A helper-function for direct-to-S3 uploads that works together with the afforementioned function by generating the SHA1-HMAC Base64 encoded signature requred by the S3 API for direct post requests (<a href="http://aws.amazon.com/articles/1434">refer here</a> for more information on the purpose of these functions)
